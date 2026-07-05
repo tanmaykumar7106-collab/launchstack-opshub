@@ -4,6 +4,8 @@ const router = express.Router();
 
 const protect = require("../../middleware/auth.middleware");
 
+const validateClient = require("./clients.validation");
+
 const {
 create,
 getAll,
@@ -20,10 +22,14 @@ res.json({
 });
 });
 
-router.post("/", protect, create);
+router.post("/", protect, validateClient, create);
+
 router.get("/", protect, getAll);
+
 router.get("/:id", protect, getOne);
+
 router.put("/:id", protect, update);
+
 router.delete("/:id", protect, remove);
 
 module.exports = router;

@@ -34,12 +34,14 @@ try {
 // ======================
 const getAll = async (req, res) => {
 try {
-    const clients = await getAllClients(req.user._id);
+    const result = await getAllClients(
+    req.user._id,
+    req.query
+    );
 
     res.status(200).json({
     success: true,
-    count: clients.length,
-    data: clients,
+    ...result,
     });
 } catch (error) {
     res.status(500).json({

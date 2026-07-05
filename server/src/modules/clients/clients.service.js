@@ -10,8 +10,59 @@ return await Client.create(clientData);
 // ======================
 // GET ALL CLIENTS
 // ======================
-const getAllClients = async (userId) => {
-return await Client.find({ owner: userId }).sort({ createdAt: -1 });
+const getAllClients = async (userId, query) => {
+const {
+    search = "",
+    status,
+    page = 1,
+    limit = 10,
+    sort = "-createdAt",
+} = query;
+
+const filter = {
+    owner: userId,
+};
+
+if (search) {
+    filter.$or = [
+    {
+        companyName: {
+        $regex: search,
+        $options: "i",
+        },
+    },
+    {
+        contactPerson: {
+        $regex: search,
+        $options: "i",
+        },
+    },
+    {
+        email: {
+        $regex: search,
+        $options: "i",
+        },
+    },
+    ];
+}
+
+if (status) {
+    filter.status = status;
+}
+
+const clients = await Client.find(filter)
+    .sort(sort)
+    .skip((page - 1) * limit)
+    .limit(Number(limit));
+
+const total = await Client.countDocuments(filter);
+
+return {
+    clients,
+    total,
+    page: Number(page),
+    pages: Math.ceil(total / limit),
+};
 };
 
 // ======================
