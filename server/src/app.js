@@ -2,12 +2,18 @@ const express = require("express");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 
+// Routes
 const authRoutes = require("./modules/auth/auth.routes");
+const clientRoutes = require("./modules/clients");
+
+// Middleware
 const errorHandler = require("./middleware/error.middleware");
 
 const app = express();
 
-// Middlewares
+// =====================
+// MIDDLEWARES
+// =====================
 app.use(
 cors({
     origin: "http://localhost:5173",
@@ -18,7 +24,9 @@ cors({
 app.use(express.json());
 app.use(cookieParser());
 
-// Health Check
+// =====================
+// HEALTH CHECK
+// =====================
 app.get("/", (req, res) => {
 res.send("Server working");
 });
@@ -27,10 +35,15 @@ app.get("/test", (req, res) => {
 res.send("Test route working");
 });
 
-// Routes
+// =====================
+// API ROUTES
+// =====================
 app.use("/api/auth", authRoutes);
+app.use("/api/clients", clientRoutes);
 
-// 404
+// =====================
+// 404 HANDLER
+// =====================
 app.use((req, res) => {
 res.status(404).json({
     success: false,
@@ -38,7 +51,9 @@ res.status(404).json({
 });
 });
 
-// Global Error Handler
+// =====================
+// ERROR HANDLER
+// =====================
 app.use(errorHandler);
 
 module.exports = app;
