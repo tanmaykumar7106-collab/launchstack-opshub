@@ -10,15 +10,14 @@ useEffect(() => {
 }, []);
 
 const fetchClients = async () => {
-try {
+    try {
     const res = await getClients();
-    setClients(res.data || res.clients || []);
-} catch (err) {
-    console.error("Error fetching clients:", err);
-    setClients([]);
-} finally {
+    setClients(res.data);
+    } catch (err) {
+    console.error(err);
+    } finally {
     setLoading(false);
-}
+    }
 };
 
 if (loading) {
@@ -27,14 +26,16 @@ if (loading) {
 
 return (
     <div>
-    <h1 className="mb-6 text-3xl font-bold">Clients</h1>
+    <h1 className="mb-6 text-3xl font-bold">
+        Clients
+    </h1>
 
     {clients.length === 0 ? (
         <p>No clients found.</p>
     ) : (
-        <table className="w-full border border-slate-300">
-        <thead className="bg-slate-100">
-            <tr>
+        <table className="w-full border">
+        <thead>
+            <tr className="bg-slate-100">
             <th className="p-3 text-left">Company</th>
             <th className="p-3 text-left">Contact</th>
             <th className="p-3 text-left">Email</th>
