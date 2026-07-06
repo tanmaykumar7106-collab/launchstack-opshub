@@ -8,6 +8,7 @@ const dashboardRoutes = require("./modules/dashboard");
 const projectRoutes = require("./modules/projects");
 const errorHandler = require("./middleware/error.middleware");
 const sopRoutes = require("./modules/sop");
+const aiRoutes = require("./modules/ai");
 
 const app = express();
 
@@ -31,6 +32,7 @@ app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/projects", projectRoutes);
 app.use("/api/tasks", taskRoutes);
 app.use("/api/sop", sopRoutes);
+app.use("/api/ai", aiRoutes);
 
 app.use((req, res) => {
     res.status(404).json({
