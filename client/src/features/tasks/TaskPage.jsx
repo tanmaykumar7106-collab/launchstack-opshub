@@ -9,6 +9,7 @@ import { getProjects } from "../../services/projects.service";
 
 import TaskForm from "./TaskForm";
 import TaskTable from "./TaskTable";
+import PageHeader from "@/components/ui/PageHeader";
 
 const initialTaskForm = {
     project: "",
@@ -112,21 +113,12 @@ export default function TaskPage() {
 
     return (
         <div className="space-y-6">
-            <div className="flex items-center justify-between">
-                <div>
-                    <h1 className="text-3xl font-bold">Tasks</h1>
-                    <p className="text-slate-500">
-                        Manage tasks linked to your projects.
-                    </p>
-                </div>
-
-                <button
-                    onClick={openCreateForm}
-                    className="rounded-xl bg-blue-600 px-5 py-2.5 text-white hover:bg-blue-700"
-                >
-                    + New Task
-                </button>
-            </div>
+            <PageHeader
+                title="Tasks"
+                subtitle="Manage tasks linked to your projects."
+                buttonText="+ New Task"
+                onButtonClick={openCreateForm}
+            />
 
             {showForm && (
                 <TaskForm
@@ -138,6 +130,7 @@ export default function TaskPage() {
                     onCancel={() => {
                         setShowForm(false);
                         setEditingTask(null);
+                        setForm(initialTaskForm);
                     }}
                 />
             )}
@@ -146,6 +139,7 @@ export default function TaskPage() {
                 tasks={tasks}
                 onEdit={openEditForm}
                 onDelete={handleDelete}
+                onCreate={openCreateForm}
             />
         </div>
     );

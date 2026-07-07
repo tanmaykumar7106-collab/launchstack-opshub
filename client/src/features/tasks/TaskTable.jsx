@@ -1,10 +1,21 @@
-export default function TaskTable({ tasks, onEdit, onDelete }) {
+import Button from "@/components/ui/Button";
+import StatusBadge from "@/components/ui/StatusBadge";
+import PriorityBadge from "@/components/ui/PriorityBadge";
+import EmptyState from "@/components/ui/EmptyState";
+
+export default function TaskTable({ tasks, onEdit, onDelete, onCreate }) {
     if (tasks.length === 0) {
-        return <p>No tasks found.</p>;
+        return (
+            <EmptyState
+                title="No Tasks Yet"
+                description="Create your first task and start tracking project work."
+                action={<Button onClick={onCreate}>+ New Task</Button>}
+            />
+        );
     }
 
     return (
-        <table className="w-full rounded-xl border bg-white">
+        <table className="w-full overflow-hidden rounded-xl border bg-white">
             <thead className="bg-slate-100">
                 <tr>
                     <th className="p-3 text-left">Task</th>
@@ -19,29 +30,25 @@ export default function TaskTable({ tasks, onEdit, onDelete }) {
             <tbody>
                 {tasks.map((task) => (
                     <tr key={task._id} className="border-t">
-                        <td className="p-3">{task.title}</td>
+                        <td className="p-3 font-medium">{task.title}</td>
                         <td className="p-3">{task.project?.projectName || "-"}</td>
-                        <td className="p-3">{task.status}</td>
-                        <td className="p-3">{task.priority}</td>
                         <td className="p-3">
-                            {task.dueDate
-                                ? new Date(task.dueDate).toLocaleDateString()
-                                : "-"}
+                            <StatusBadge status={task.status} />
+                        </td>
+                        <td className="p-3">
+                            <PriorityBadge priority={task.priority} />
+                        </td>
+                        <td className="p-3">
+                            {task.dueDate ? new Date(task.dueDate).toLocaleDateString() : "-"}
                         </td>
                         <td className="flex gap-2 p-3">
-                            <button
-                                onClick={() => onEdit(task)}
-                                className="rounded-lg border px-3 py-1 text-sm hover:bg-slate-100"
-                            >
+                            <Button size="sm" variant="secondary" onClick={() => onEdit(task)}>
                                 Edit
-                            </button>
+                            </Button>
 
-                            <button
-                                onClick={() => onDelete(task._id)}
-                                className="rounded-lg bg-red-600 px-3 py-1 text-sm text-white hover:bg-red-700"
-                            >
+                            <Button size="sm" variant="danger" onClick={() => onDelete(task._id)}>
                                 Delete
-                            </button>
+                            </Button>
                         </td>
                     </tr>
                 ))}

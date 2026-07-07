@@ -6,6 +6,11 @@ import {
     deleteClient,
 } from "../../services/clients.service";
 
+import PageHeader from "@/components/ui/PageHeader";
+import Button from "@/components/ui/Button";
+import EmptyState from "@/components/ui/EmptyState";
+import StatusBadge from "@/components/ui/StatusBadge";
+
 const initialForm = {
     companyName: "",
     contactPerson: "",
@@ -80,22 +85,18 @@ export default function ClientPage() {
             setShowForm(false);
             fetchClients();
         } catch (err) {
-            alert(err.response?.data?.message || "Something went wrong");
+            toast.error(err.response?.data?.message || "Something went wrong");
         }
     };
 
     const handleDelete = async (clientId) => {
-        const confirmDelete = window.confirm(
-            "Are you sure you want to delete this client?"
-        );
-
-        if (!confirmDelete) return;
+        if (!window.confirm("Are you sure you want to delete this client?")) return;
 
         try {
             await deleteClient(clientId);
             fetchClients();
         } catch (err) {
-            alert(err.response?.data?.message || "Failed to delete client");
+            toast.error(err.response?.data?.message || "Failed to delete client");
         }
     };
 
@@ -103,19 +104,12 @@ export default function ClientPage() {
 
     return (
         <div className="space-y-6">
-            <div className="flex items-center justify-between">
-                <div>
-                    <h1 className="text-3xl font-bold">Clients</h1>
-                    <p className="text-slate-500">Manage your business clients.</p>
-                </div>
-
-                <button
-                    onClick={openCreateForm}
-                    className="rounded-xl bg-blue-600 px-5 py-2.5 font-medium text-white hover:bg-blue-700"
-                >
-                    + Add Client
-                </button>
-            </div>
+            <PageHeader
+                title="Clients"
+                subtitle="Manage all your business clients."
+                buttonText="+ New Client"
+                onButtonClick={openCreateForm}
+            />
 
             {showForm && (
                 <div className="rounded-2xl border bg-white p-6 shadow-sm">
@@ -140,30 +134,34 @@ export default function ClientPage() {
                         <textarea name="notes" placeholder="Notes" value={form.notes} onChange={handleChange} className="rounded-xl border p-3 md:col-span-2" />
 
                         <div className="flex gap-3 md:col-span-2">
-                            <button type="submit" className="rounded-xl bg-blue-600 px-5 py-2.5 text-white hover:bg-blue-700">
+                            <Button type="submit">
                                 {editingClient ? "Update Client" : "Save Client"}
-                            </button>
+                            </Button>
 
-                            <button
+                            <Button
                                 type="button"
+                                variant="secondary"
                                 onClick={() => {
                                     setShowForm(false);
                                     setEditingClient(null);
                                     setForm(initialForm);
                                 }}
-                                className="rounded-xl border px-5 py-2.5"
                             >
                                 Cancel
-                            </button>
+                            </Button>
                         </div>
                     </form>
                 </div>
             )}
 
             {clients.length === 0 ? (
-                <p>No clients found.</p>
+                <EmptyState
+                    title="No Clients Yet"
+                    description="Add your first client to start managing projects."
+                    action={<Button onClick={openCreateForm}>+ New Client</Button>}
+                />
             ) : (
-                <table className="w-full overflow-hidden rounded-xl border border-slate-300 bg-white">
+                <table className="w-full overflow-hidden rounded-xl border bg-white">
                     <thead className="bg-slate-100">
                         <tr>
                             <th className="p-3 text-left">Company</th>
@@ -176,25 +174,21 @@ export default function ClientPage() {
 
                     <tbody>
                         {clients.map((client) => (
-                            <tr key={client._id} className="border-t">
-                                <td className="p-3">{client.companyName}</td>
+                            <tr key={client._id} className="border-t hover:bg-slate-50">
+                                <td className="p-3 font-medium">{client.companyName}</td>
                                 <td className="p-3">{client.contactPerson}</td>
                                 <td className="p-3">{client.email}</td>
-                                <td className="p-3">{client.status}</td>
+                                <td className="p-3">
+                                    <StatusBadge status={client.status} />
+                                </td>
                                 <td className="flex gap-2 p-3">
-                                    <button
-                                        onClick={() => openEditForm(client)}
-                                        className="rounded-lg border px-3 py-1 text-sm hover:bg-slate-100"
-                                    >
+                                    <Button size="sm" variant="secondary" onClick={() => openEditForm(client)}>
                                         Edit
-                                    </button>
+                                    </Button>
 
-                                    <button
-                                        onClick={() => handleDelete(client._id)}
-                                        className="rounded-lg bg-red-600 px-3 py-1 text-sm text-white hover:bg-red-700"
-                                    >
+                                    <Button size="sm" variant="danger" onClick={() => handleDelete(client._id)}>
                                         Delete
-                                    </button>
+                                    </Button>
                                 </td>
                             </tr>
                         ))}
