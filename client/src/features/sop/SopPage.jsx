@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
+
 import {
     getSOPs,
     createSOP,
@@ -6,9 +8,11 @@ import {
     deleteSOP,
 } from "../../services/sop.service";
 
+import Page from "@/components/ui/Page";
+import PageHeader from "@/components/ui/PageHeader";
+
 import SopForm from "./SopForm";
 import SopTable from "./SopTable";
-import PageHeader from "@/components/ui/PageHeader";
 
 const initialSopForm = {
     title: "",
@@ -76,8 +80,10 @@ export default function SopPage() {
         try {
             if (editingSop) {
                 await updateSOP(editingSop._id, payload);
+                toast.success("SOP updated successfully");
             } else {
                 await createSOP(payload);
+                toast.success("SOP created successfully");
             }
 
             setForm(initialSopForm);
@@ -85,7 +91,7 @@ export default function SopPage() {
             setShowForm(false);
             fetchSops();
         } catch (err) {
-            alert(err.response?.data?.message || "Failed to save SOP");
+            toast.error(err.response?.data?.message || "Failed to save SOP");
         }
     };
 
@@ -94,16 +100,23 @@ export default function SopPage() {
 
         try {
             await deleteSOP(sopId);
+            toast.success("SOP deleted successfully");
             fetchSops();
         } catch (err) {
-            alert(err.response?.data?.message || "Failed to delete SOP");
+            toast.error(err.response?.data?.message || "Failed to delete SOP");
         }
     };
 
-    if (loading) return <h2>Loading SOPs...</h2>;
+    if (loading) {
+        return (
+            <h2 className="text-slate-700 dark:text-slate-300">
+                Loading SOPs...
+            </h2>
+        );
+    }
 
     return (
-        <div className="space-y-6">
+        <Page>
             <PageHeader
                 title="SOP Library"
                 subtitle="Create and manage standard operating procedures."
@@ -131,6 +144,6 @@ export default function SopPage() {
                 onDelete={handleDelete}
                 onCreate={openCreateForm}
             />
-        </div>
+        </Page>
     );
 }

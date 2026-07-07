@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
+
 import {
     getProjects,
     createProject,
@@ -7,7 +9,9 @@ import {
 } from "../../services/projects.service";
 import { getClients } from "../../services/clients.service";
 
+import Page from "@/components/ui/Page";
 import PageHeader from "@/components/ui/PageHeader";
+import Card from "@/components/ui/Card";
 import Button from "@/components/ui/Button";
 import EmptyState from "@/components/ui/EmptyState";
 import StatusBadge from "@/components/ui/StatusBadge";
@@ -99,8 +103,10 @@ export default function ProjectPage() {
 
             if (editingProject) {
                 await updateProject(editingProject._id, payload);
+                toast.success("Project updated successfully");
             } else {
                 await createProject(payload);
+                toast.success("Project created successfully");
             }
 
             setForm(initialForm);
@@ -108,29 +114,32 @@ export default function ProjectPage() {
             setShowForm(false);
             fetchData();
         } catch (err) {
-            alert(err.response?.data?.message || "Failed to save project");
+            toast.error(err.response?.data?.message || "Failed to save project");
         }
     };
 
     const handleDelete = async (projectId) => {
-        const confirmDelete = window.confirm(
-            "Are you sure you want to delete this project?"
-        );
-
-        if (!confirmDelete) return;
+        if (!window.confirm("Are you sure you want to delete this project?")) return;
 
         try {
             await deleteProject(projectId);
+            toast.success("Project deleted successfully");
             fetchData();
         } catch (err) {
-            alert(err.response?.data?.message || "Failed to delete project");
+            toast.error(err.response?.data?.message || "Failed to delete project");
         }
     };
 
-    if (loading) return <h2>Loading projects...</h2>;
+    if (loading) {
+        return (
+            <h2 className="text-slate-700 dark:text-slate-300">
+                Loading projects...
+            </h2>
+        );
+    }
 
     return (
-        <div className="space-y-6">
+        <Page>
             <PageHeader
                 title="Projects"
                 subtitle="Manage all client projects in one place."
@@ -139,20 +148,17 @@ export default function ProjectPage() {
             />
 
             {showForm && (
-                <div className="rounded-2xl border bg-white p-6 shadow-sm">
-                    <h2 className="mb-4 text-xl font-semibold">
+                <Card>
+                    <h2 className="mb-4 text-xl font-semibold text-slate-900 dark:text-white">
                         {editingProject ? "Edit Project" : "Add New Project"}
                     </h2>
 
-                    <form
-                        onSubmit={handleSubmit}
-                        className="grid gap-4 md:grid-cols-2"
-                    >
+                    <form onSubmit={handleSubmit} className="grid gap-4 md:grid-cols-2">
                         <select
                             name="client"
                             value={form.client}
                             onChange={handleChange}
-                            className="rounded-xl border p-3"
+                            className="rounded-xl border border-slate-300 bg-white p-3 text-slate-900 outline-none focus:ring-2 focus:ring-blue-200 dark:border-slate-700 dark:bg-slate-950 dark:text-white"
                             required
                         >
                             <option value="">Select Client</option>
@@ -168,7 +174,7 @@ export default function ProjectPage() {
                             placeholder="Project Name"
                             value={form.projectName}
                             onChange={handleChange}
-                            className="rounded-xl border p-3"
+                            className="rounded-xl border border-slate-300 bg-white p-3 text-slate-900 outline-none focus:ring-2 focus:ring-blue-200 dark:border-slate-700 dark:bg-slate-950 dark:text-white"
                             required
                         />
 
@@ -178,14 +184,14 @@ export default function ProjectPage() {
                             placeholder="Budget"
                             value={form.budget}
                             onChange={handleChange}
-                            className="rounded-xl border p-3"
+                            className="rounded-xl border border-slate-300 bg-white p-3 text-slate-900 outline-none focus:ring-2 focus:ring-blue-200 dark:border-slate-700 dark:bg-slate-950 dark:text-white"
                         />
 
                         <select
                             name="priority"
                             value={form.priority}
                             onChange={handleChange}
-                            className="rounded-xl border p-3"
+                            className="rounded-xl border border-slate-300 bg-white p-3 text-slate-900 outline-none focus:ring-2 focus:ring-blue-200 dark:border-slate-700 dark:bg-slate-950 dark:text-white"
                         >
                             <option value="Low">Low</option>
                             <option value="Medium">Medium</option>
@@ -197,7 +203,7 @@ export default function ProjectPage() {
                             name="status"
                             value={form.status}
                             onChange={handleChange}
-                            className="rounded-xl border p-3"
+                            className="rounded-xl border border-slate-300 bg-white p-3 text-slate-900 outline-none focus:ring-2 focus:ring-blue-200 dark:border-slate-700 dark:bg-slate-950 dark:text-white"
                         >
                             <option value="Planning">Planning</option>
                             <option value="In Progress">In Progress</option>
@@ -211,7 +217,7 @@ export default function ProjectPage() {
                             type="date"
                             value={form.startDate}
                             onChange={handleChange}
-                            className="rounded-xl border p-3"
+                            className="rounded-xl border border-slate-300 bg-white p-3 text-slate-900 outline-none focus:ring-2 focus:ring-blue-200 dark:border-slate-700 dark:bg-slate-950 dark:text-white"
                         />
 
                         <input
@@ -219,7 +225,7 @@ export default function ProjectPage() {
                             type="date"
                             value={form.endDate}
                             onChange={handleChange}
-                            className="rounded-xl border p-3"
+                            className="rounded-xl border border-slate-300 bg-white p-3 text-slate-900 outline-none focus:ring-2 focus:ring-blue-200 dark:border-slate-700 dark:bg-slate-950 dark:text-white"
                         />
 
                         <textarea
@@ -227,7 +233,7 @@ export default function ProjectPage() {
                             placeholder="Project Description"
                             value={form.description}
                             onChange={handleChange}
-                            className="rounded-xl border p-3 md:col-span-2"
+                            className="rounded-xl border border-slate-300 bg-white p-3 text-slate-900 outline-none focus:ring-2 focus:ring-blue-200 md:col-span-2 dark:border-slate-700 dark:bg-slate-950 dark:text-white"
                         />
 
                         <div className="flex gap-3 md:col-span-2">
@@ -248,7 +254,7 @@ export default function ProjectPage() {
                             </Button>
                         </div>
                     </form>
-                </div>
+                </Card>
             )}
 
             {projects.length === 0 ? (
@@ -258,56 +264,75 @@ export default function ProjectPage() {
                     action={<Button onClick={openCreateForm}>+ New Project</Button>}
                 />
             ) : (
-                <table className="w-full overflow-hidden rounded-xl border bg-white">
-                    <thead className="bg-slate-100">
-                        <tr>
-                            <th className="p-3 text-left">Project</th>
-                            <th className="p-3 text-left">Client</th>
-                            <th className="p-3 text-left">Status</th>
-                            <th className="p-3 text-left">Priority</th>
-                            <th className="p-3 text-left">Budget</th>
-                            <th className="p-3 text-left">Actions</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-                        {projects.map((project) => (
-                            <tr key={project._id} className="border-t">
-                                <td className="p-3 font-medium">{project.projectName}</td>
-                                <td className="p-3">
-                                    {project.client?.companyName || "-"}
-                                </td>
-                                <td className="p-3">
-                                    <StatusBadge status={project.status} />
-                                </td>
-                                <td className="p-3">
-                                    <PriorityBadge priority={project.priority} />
-                                </td>
-                                <td className="p-3">
-                                    ₹{Number(project.budget || 0).toLocaleString()}
-                                </td>
-                                <td className="flex gap-2 p-3">
-                                    <Button
-                                        size="sm"
-                                        variant="secondary"
-                                        onClick={() => openEditForm(project)}
-                                    >
-                                        Edit
-                                    </Button>
-
-                                    <Button
-                                        size="sm"
-                                        variant="danger"
-                                        onClick={() => handleDelete(project._id)}
-                                    >
-                                        Delete
-                                    </Button>
-                                </td>
+                <Card className="p-0">
+                    <table className="w-full overflow-hidden">
+                        <thead className="bg-slate-100 dark:bg-slate-800">
+                            <tr>
+                                <th className="p-3 text-left text-slate-700 dark:text-slate-300">
+                                    Project
+                                </th>
+                                <th className="p-3 text-left text-slate-700 dark:text-slate-300">
+                                    Client
+                                </th>
+                                <th className="p-3 text-left text-slate-700 dark:text-slate-300">
+                                    Status
+                                </th>
+                                <th className="p-3 text-left text-slate-700 dark:text-slate-300">
+                                    Priority
+                                </th>
+                                <th className="p-3 text-left text-slate-700 dark:text-slate-300">
+                                    Budget
+                                </th>
+                                <th className="p-3 text-left text-slate-700 dark:text-slate-300">
+                                    Actions
+                                </th>
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
+                        </thead>
+
+                        <tbody>
+                            {projects.map((project) => (
+                                <tr
+                                    key={project._id}
+                                    className="border-t border-slate-200 transition hover:bg-slate-50 dark:border-slate-800 dark:hover:bg-slate-800"
+                                >
+                                    <td className="p-3 font-medium text-slate-900 dark:text-white">
+                                        {project.projectName}
+                                    </td>
+                                    <td className="p-3 text-slate-600 dark:text-slate-400">
+                                        {project.client?.companyName || "-"}
+                                    </td>
+                                    <td className="p-3">
+                                        <StatusBadge status={project.status} />
+                                    </td>
+                                    <td className="p-3">
+                                        <PriorityBadge priority={project.priority} />
+                                    </td>
+                                    <td className="p-3 text-slate-600 dark:text-slate-400">
+                                        ₹{Number(project.budget || 0).toLocaleString()}
+                                    </td>
+                                    <td className="flex gap-2 p-3">
+                                        <Button
+                                            size="sm"
+                                            variant="secondary"
+                                            onClick={() => openEditForm(project)}
+                                        >
+                                            Edit
+                                        </Button>
+
+                                        <Button
+                                            size="sm"
+                                            variant="danger"
+                                            onClick={() => handleDelete(project._id)}
+                                        >
+                                            Delete
+                                        </Button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </Card>
             )}
-        </div>
+        </Page>
     );
 }
