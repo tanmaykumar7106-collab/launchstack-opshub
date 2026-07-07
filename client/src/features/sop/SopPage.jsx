@@ -8,6 +8,7 @@ import {
 
 import SopForm from "./SopForm";
 import SopTable from "./SopTable";
+import PageHeader from "@/components/ui/PageHeader";
 
 const initialSopForm = {
     title: "",
@@ -89,11 +90,7 @@ export default function SopPage() {
     };
 
     const handleDelete = async (sopId) => {
-        const confirmDelete = window.confirm(
-            "Are you sure you want to delete this SOP?"
-        );
-
-        if (!confirmDelete) return;
+        if (!window.confirm("Are you sure you want to delete this SOP?")) return;
 
         try {
             await deleteSOP(sopId);
@@ -107,21 +104,12 @@ export default function SopPage() {
 
     return (
         <div className="space-y-6">
-            <div className="flex items-center justify-between">
-                <div>
-                    <h1 className="text-3xl font-bold">SOP Library</h1>
-                    <p className="text-slate-500">
-                        Create and manage standard operating procedures.
-                    </p>
-                </div>
-
-                <button
-                    onClick={openCreateForm}
-                    className="rounded-xl bg-blue-600 px-5 py-2.5 text-white hover:bg-blue-700"
-                >
-                    + New SOP
-                </button>
-            </div>
+            <PageHeader
+                title="SOP Library"
+                subtitle="Create and manage standard operating procedures."
+                buttonText="+ New SOP"
+                onButtonClick={openCreateForm}
+            />
 
             {showForm && (
                 <SopForm
@@ -132,6 +120,7 @@ export default function SopPage() {
                     onCancel={() => {
                         setShowForm(false);
                         setEditingSop(null);
+                        setForm(initialSopForm);
                     }}
                 />
             )}
@@ -140,6 +129,7 @@ export default function SopPage() {
                 sops={sops}
                 onEdit={openEditForm}
                 onDelete={handleDelete}
+                onCreate={openCreateForm}
             />
         </div>
     );

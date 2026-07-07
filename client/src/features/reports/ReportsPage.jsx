@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { getReportsOverview } from "../../services/reports.service";
 
+import PageHeader from "@/components/ui/PageHeader";
 import ReportCards from "./ReportCards";
 import StatusCharts from "./StatusCharts";
 
@@ -46,37 +47,29 @@ export default function ReportsPage() {
 
     return (
         <div className="space-y-8">
-            <div>
-                <h1 className="text-3xl font-bold">Reports</h1>
-                <p className="text-slate-500">
-                    Analytics overview of your operations.
-                </p>
-            </div>
+            <PageHeader
+                title="Reports"
+                subtitle="Analytics overview of your business operations."
+            />
 
             <ReportCards totals={report.totals} />
 
             <StatusCharts breakdowns={report.breakdowns} />
 
             <div className="rounded-2xl border bg-white p-6 shadow-sm">
-                <h2 className="mb-4 text-xl font-semibold">
-                    Completion Summary
-                </h2>
+                <h2 className="mb-4 text-xl font-semibold">Completion Summary</h2>
 
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                    <div className="rounded-xl bg-slate-50 p-4">
-                        <p className="text-sm text-slate-500">
-                            Completed Projects
-                        </p>
-                        <h3 className="text-2xl font-bold">
+                    <div className="rounded-xl bg-slate-50 p-5">
+                        <p className="text-sm text-slate-500">Completed Projects</p>
+                        <h3 className="mt-2 text-3xl font-bold">
                             {report.completion.completedProjects}
                         </h3>
                     </div>
 
-                    <div className="rounded-xl bg-slate-50 p-4">
-                        <p className="text-sm text-slate-500">
-                            Completed Tasks
-                        </p>
-                        <h3 className="text-2xl font-bold">
+                    <div className="rounded-xl bg-slate-50 p-5">
+                        <p className="text-sm text-slate-500">Completed Tasks</p>
+                        <h3 className="mt-2 text-3xl font-bold">
                             {report.completion.completedTasks}
                         </h3>
                     </div>
