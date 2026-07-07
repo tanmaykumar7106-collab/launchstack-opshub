@@ -4,10 +4,20 @@ const connectDB = require("../src/config/db");
 let isConnected = false;
 
 module.exports = async (req, res) => {
-    if (!isConnected) {
-        await connectDB();
-        isConnected = true;
-    }
+    try {
+        if (!isConnected) {
+            await connectDB();
+            isConnected = true;
+            console.log("MongoDB Connected");
+        }
 
-    return app(req, res);
+        return app(req, res);
+    } catch (error) {
+        console.error(error);
+
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server Error",
+        });
+    }
 };
