@@ -1,17 +1,24 @@
 import { useState } from "react";
+import toast from "react-hot-toast";
+import { Sparkles } from "lucide-react";
+
 import {
     generateSOP,
     generateTasks,
     generateEmail,
 } from "../../services/ai.service";
 
+import Page from "@/components/ui/Page";
 import PageHeader from "@/components/ui/PageHeader";
-import Button from "@/components/ui/Button";
+
+import AIActionTabs from "./components/AIActionTabs";
+import AIInput from "./components/AIInput";
+import AIOutput from "./components/AIOutput";
 
 export default function AiPage() {
     const [activeTool, setActiveTool] = useState("sop");
     const [loading, setLoading] = useState(false);
-    const [result, setResult] = useState(null);
+    const [output, setOutput] = useState("");
 
     const [sopForm, setSopForm] = useState({
         topic: "",
@@ -27,19 +34,24 @@ export default function AiPage() {
         purpose: "",
     });
 
-    const resetResult = (tool) => {
+    const handleToolChange = (tool) => {
         setActiveTool(tool);
-        setResult(null);
+        setOutput("");
     };
 
     const handleGenerateSOP = async (e) => {
         e.preventDefault();
         setLoading(true);
-        setResult(null);
+        setOutput("");
 
         try {
             const res = await generateSOP(sopForm);
-            setResult(res.data);
+            const data = res.data;
+
+            const markdown = data.description || "";
+            setOutput(markdown);
+
+            toast.success("SOP generated successfully");
         } catch (err) {
             toast.error(err.response?.data?.message || "Failed to generate SOP");
         } finally {
@@ -50,11 +62,26 @@ export default function AiPage() {
     const handleGenerateTasks = async (e) => {
         e.preventDefault();
         setLoading(true);
-        setResult(null);
+        setOutput("");
 
         try {
             const res = await generateTasks(taskForm);
-            setResult(res.data);
+            const data = res.data;
+
+            const markdown = `# Task Plan for ${data.projectName}
+
+${data.tasks
+                    ?.map(
+                        (task, index) =>
+                            `${index + 1}. **${task.title}**  
+   - Priority: ${task.priority}  
+   - Status: ${task.status}`
+                    )
+                    .join("\n\n")}`;
+
+            setOutput(markdown);
+
+            toast.success("Tasks generated successfully");
         } catch (err) {
             toast.error(err.response?.data?.message || "Failed to generate tasks");
         } finally {
@@ -65,11 +92,19 @@ export default function AiPage() {
     const handleGenerateEmail = async (e) => {
         e.preventDefault();
         setLoading(true);
-        setResult(null);
+        setOutput("");
 
         try {
             const res = await generateEmail(emailForm);
-            setResult(res.data);
+            const data = res.data;
+
+            const markdown = `# ${data.subject}
+
+${data.body}`;
+
+            setOutput(markdown);
+
+            toast.success("Email generated successfully");
         } catch (err) {
             toast.error(err.response?.data?.message || "Failed to generate email");
         } finally {
@@ -77,217 +112,72 @@ export default function AiPage() {
         }
     };
 
-    const renderResult = () => {
-        if (!result) {
-            return (
-                <div className="rounded-2xl border border-dashed bg-slate-50 p-10 text-center">
-                    <p className="text-slate-500">
-                        Generated AI output will appear here.
-                    </p>
-                </div>
-            );
-        }
-
-        if (activeTool === "sop") {
-            return (
-                <div className="space-y-4">
-                    <div>
-                        <h3 className="text-2xl font-semibold">{result.title}</h3>
-                        <p className="mt-2 text-slate-600">{result.description}</p>
-                    </div>
-
-                    <div className="rounded-xl bg-slate-50 p-5">
-                        <h4 className="mb-3 font-semibold">Steps</h4>
-                        <ol className="list-decimal space-y-2 pl-5">
-                            {result.steps?.map((step, index) => (
-                                <li key={index}>{step}</li>
-                            ))}
-                        </ol>
-                    </div>
-                </div>
-            );
-        }
-
-        if (activeTool === "tasks") {
-            return (
-                <div className="space-y-4">
-                    <h3 className="text-2xl font-semibold">
-                        Tasks for {result.projectName}
-                    </h3>
-
-                    <div className="grid gap-3">
-                        {result.tasks?.map((task, index) => (
-                            <div
-                                key={index}
-                                className="rounded-xl border bg-slate-50 p-4"
-                            >
-                                <p className="font-medium">{task.title}</p>
-                                <p className="mt-1 text-sm text-slate-500">
-                                    {task.priority} • {task.status}
-                                </p>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            );
-        }
-
-        if (activeTool === "email") {
-            return (
-                <div className="space-y-4">
-                    <h3 className="text-2xl font-semibold">{result.subject}</h3>
-
-                    <pre className="whitespace-pre-wrap rounded-xl bg-slate-50 p-5 text-sm leading-6">
-                        {result.body}
-                    </pre>
-                </div>
-            );
-        }
-
-        return null;
-    };
-
     return (
-        <div className="space-y-8">
+        <Page>
             <PageHeader
-                title="AI Assistant"
-                subtitle="Generate SOPs, task breakdowns, and client-ready emails."
+                title="LaunchStack AI Copilot"
+                subtitle="Generate SOPs, task plans, and professional client emails using local AI."
             />
 
-            <div className="grid gap-6 xl:grid-cols-3">
-                <div className="space-y-6 xl:col-span-1">
-                    <div className="rounded-2xl border bg-white p-4 shadow-sm">
-                        <div className="grid gap-2">
-                            <button
-                                onClick={() => resetResult("sop")}
-                                className={`rounded-xl px-4 py-3 text-left font-medium transition ${activeTool === "sop"
-                                        ? "bg-blue-600 text-white"
-                                        : "bg-slate-100 hover:bg-slate-200"
-                                    }`}
-                            >
-                                📝 Generate SOP
-                            </button>
+            <div className="rounded-3xl border border-blue-200 bg-gradient-to-r from-blue-600 to-indigo-600 p-8 text-white shadow-lg dark:border-blue-900">
+                <div className="flex items-center gap-3">
+                    <Sparkles size={28} />
 
-                            <button
-                                onClick={() => resetResult("tasks")}
-                                className={`rounded-xl px-4 py-3 text-left font-medium transition ${activeTool === "tasks"
-                                        ? "bg-blue-600 text-white"
-                                        : "bg-slate-100 hover:bg-slate-200"
-                                    }`}
-                            >
-                                📋 Break Project Into Tasks
-                            </button>
+                    <div>
+                        <h2 className="text-2xl font-bold">
+                            AI-powered business operations
+                        </h2>
 
-                            <button
-                                onClick={() => resetResult("email")}
-                                className={`rounded-xl px-4 py-3 text-left font-medium transition ${activeTool === "email"
-                                        ? "bg-blue-600 text-white"
-                                        : "bg-slate-100 hover:bg-slate-200"
-                                    }`}
-                            >
-                                📧 Draft Client Email
-                            </button>
-                        </div>
+                        <p className="mt-1 text-blue-100">
+                            Turn rough ideas into structured SOPs, task plans, and client-ready emails.
+                        </p>
                     </div>
-
-                    <div className="rounded-2xl border bg-white p-6 shadow-sm">
-                        {activeTool === "sop" && (
-                            <form onSubmit={handleGenerateSOP} className="space-y-4">
-                                <input
-                                    placeholder="Topic e.g. Client Onboarding"
-                                    value={sopForm.topic}
-                                    onChange={(e) =>
-                                        setSopForm({ ...sopForm, topic: e.target.value })
-                                    }
-                                    className="w-full rounded-xl border p-3"
-                                    required
-                                />
-
-                                <select
-                                    value={sopForm.category}
-                                    onChange={(e) =>
-                                        setSopForm({ ...sopForm, category: e.target.value })
-                                    }
-                                    className="w-full rounded-xl border p-3"
-                                >
-                                    <option>Operations</option>
-                                    <option>Sales</option>
-                                    <option>Marketing</option>
-                                    <option>Support</option>
-                                    <option>Development</option>
-                                    <option>HR</option>
-                                    <option>Finance</option>
-                                    <option>Other</option>
-                                </select>
-
-                                <Button type="submit" className="w-full" disabled={loading}>
-                                    {loading ? "Generating..." : "Generate SOP"}
-                                </Button>
-                            </form>
-                        )}
-
-                        {activeTool === "tasks" && (
-                            <form onSubmit={handleGenerateTasks} className="space-y-4">
-                                <input
-                                    placeholder="Project name"
-                                    value={taskForm.projectName}
-                                    onChange={(e) =>
-                                        setTaskForm({
-                                            ...taskForm,
-                                            projectName: e.target.value,
-                                        })
-                                    }
-                                    className="w-full rounded-xl border p-3"
-                                    required
-                                />
-
-                                <Button type="submit" className="w-full" disabled={loading}>
-                                    {loading ? "Generating..." : "Generate Tasks"}
-                                </Button>
-                            </form>
-                        )}
-
-                        {activeTool === "email" && (
-                            <form onSubmit={handleGenerateEmail} className="space-y-4">
-                                <input
-                                    placeholder="Client name"
-                                    value={emailForm.clientName}
-                                    onChange={(e) =>
-                                        setEmailForm({
-                                            ...emailForm,
-                                            clientName: e.target.value,
-                                        })
-                                    }
-                                    className="w-full rounded-xl border p-3"
-                                    required
-                                />
-
-                                <input
-                                    placeholder="Purpose e.g. project proposal"
-                                    value={emailForm.purpose}
-                                    onChange={(e) =>
-                                        setEmailForm({
-                                            ...emailForm,
-                                            purpose: e.target.value,
-                                        })
-                                    }
-                                    className="w-full rounded-xl border p-3"
-                                    required
-                                />
-
-                                <Button type="submit" className="w-full" disabled={loading}>
-                                    {loading ? "Generating..." : "Generate Email"}
-                                </Button>
-                            </form>
-                        )}
-                    </div>
-                </div>
-
-                <div className="rounded-2xl border bg-white p-6 shadow-sm xl:col-span-2">
-                    <h2 className="mb-4 text-xl font-semibold">AI Output</h2>
-                    {renderResult()}
                 </div>
             </div>
-        </div>
+
+            <AIActionTabs
+                activeTool={activeTool}
+                onChange={handleToolChange}
+            />
+
+            <div className="grid gap-6 xl:grid-cols-5">
+                <div className="xl:col-span-2">
+                    <AIInput
+                        activeTool={activeTool}
+                        loading={loading}
+                        sopForm={sopForm}
+                        setSopForm={setSopForm}
+                        taskForm={taskForm}
+                        setTaskForm={setTaskForm}
+                        emailForm={emailForm}
+                        setEmailForm={setEmailForm}
+                        onGenerateSOP={handleGenerateSOP}
+                        onGenerateTasks={handleGenerateTasks}
+                        onGenerateEmail={handleGenerateEmail}
+                    />
+                </div>
+
+                <div className="xl:col-span-3">
+                    {output ? (
+                        <AIOutput output={output} />
+                    ) : (
+                        <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-12 text-center shadow-sm dark:border-slate-700 dark:bg-slate-900">
+                            <Sparkles
+                                size={36}
+                                className="mx-auto mb-4 text-blue-600 dark:text-blue-400"
+                            />
+
+                            <h3 className="text-xl font-semibold text-slate-900 dark:text-white">
+                                Your AI output will appear here
+                            </h3>
+
+                            <p className="mt-2 text-slate-500 dark:text-slate-400">
+                                Choose a tool, enter your details, and let LaunchStack AI generate a structured result.
+                            </p>
+                        </div>
+                    )}
+                </div>
+            </div>
+        </Page>
     );
 }

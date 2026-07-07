@@ -1,27 +1,54 @@
+import {
+    Users,
+    FolderKanban,
+    CheckSquare,
+    IndianRupee,
+} from "lucide-react";
+
+import Card from "@/components/ui/Card";
+
+const cards = [
+    { key: "clients", title: "Clients", icon: Users, color: "bg-blue-600" },
+    { key: "projects", title: "Projects", icon: FolderKanban, color: "bg-green-600" },
+    { key: "tasks", title: "Tasks", icon: CheckSquare, color: "bg-orange-500" },
+    {
+        key: "totalBudget",
+        title: "Total Budget",
+        icon: IndianRupee,
+        color: "bg-purple-600",
+        isMoney: true,
+    },
+];
+
 export default function ReportCards({ totals }) {
     return (
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
-            <div className="rounded-2xl border bg-white p-6 shadow-sm">
-                <p className="text-sm text-slate-500">Clients</p>
-                <h2 className="mt-2 text-3xl font-bold">{totals.clients}</h2>
-            </div>
+            {cards.map((card) => {
+                const Icon = card.icon;
+                const value = totals?.[card.key] || 0;
 
-            <div className="rounded-2xl border bg-white p-6 shadow-sm">
-                <p className="text-sm text-slate-500">Projects</p>
-                <h2 className="mt-2 text-3xl font-bold">{totals.projects}</h2>
-            </div>
+                return (
+                    <Card key={card.key}>
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <p className="text-sm text-slate-500 dark:text-slate-400">
+                                    {card.title}
+                                </p>
 
-            <div className="rounded-2xl border bg-white p-6 shadow-sm">
-                <p className="text-sm text-slate-500">Tasks</p>
-                <h2 className="mt-2 text-3xl font-bold">{totals.tasks}</h2>
-            </div>
+                                <h2 className="mt-2 text-3xl font-bold text-slate-900 dark:text-white">
+                                    {card.isMoney
+                                        ? `₹${Number(value).toLocaleString()}`
+                                        : value}
+                                </h2>
+                            </div>
 
-            <div className="rounded-2xl border bg-white p-6 shadow-sm">
-                <p className="text-sm text-slate-500">Total Budget</p>
-                <h2 className="mt-2 text-3xl font-bold">
-                    ₹{Number(totals.totalBudget || 0).toLocaleString()}
-                </h2>
-            </div>
+                            <div className={`rounded-xl p-3 ${card.color}`}>
+                                <Icon size={24} className="text-white" />
+                            </div>
+                        </div>
+                    </Card>
+                );
+            })}
         </div>
     );
 }
