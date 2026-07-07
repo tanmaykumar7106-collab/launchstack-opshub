@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
+
 import {
     getTasks,
     createTask,
@@ -7,9 +9,10 @@ import {
 } from "../../services/tasks.service";
 import { getProjects } from "../../services/projects.service";
 
+import Page from "@/components/ui/Page";
+import PageHeader from "@/components/ui/PageHeader";
 import TaskForm from "./TaskForm";
 import TaskTable from "./TaskTable";
-import PageHeader from "@/components/ui/PageHeader";
 
 const initialTaskForm = {
     project: "",
@@ -81,8 +84,10 @@ export default function TaskPage() {
         try {
             if (editingTask) {
                 await updateTask(editingTask._id, form);
+                toast.success("Task updated successfully");
             } else {
                 await createTask(form);
+                toast.success("Task created successfully");
             }
 
             setForm(initialTaskForm);
@@ -90,29 +95,32 @@ export default function TaskPage() {
             setShowForm(false);
             fetchData();
         } catch (err) {
-            alert(err.response?.data?.message || "Failed to save task");
+            toast.error(err.response?.data?.message || "Failed to save task");
         }
     };
 
     const handleDelete = async (taskId) => {
-        const confirmDelete = window.confirm(
-            "Are you sure you want to delete this task?"
-        );
-
-        if (!confirmDelete) return;
+        if (!window.confirm("Are you sure you want to delete this task?")) return;
 
         try {
             await deleteTask(taskId);
+            toast.success("Task deleted successfully");
             fetchData();
         } catch (err) {
-            alert(err.response?.data?.message || "Failed to delete task");
+            toast.error(err.response?.data?.message || "Failed to delete task");
         }
     };
 
-    if (loading) return <h2>Loading tasks...</h2>;
+    if (loading) {
+        return (
+            <h2 className="text-slate-700 dark:text-slate-300">
+                Loading tasks...
+            </h2>
+        );
+    }
 
     return (
-        <div className="space-y-6">
+        <Page>
             <PageHeader
                 title="Tasks"
                 subtitle="Manage tasks linked to your projects."
@@ -141,6 +149,6 @@ export default function TaskPage() {
                 onDelete={handleDelete}
                 onCreate={openCreateForm}
             />
-        </div>
+        </Page>
     );
 }

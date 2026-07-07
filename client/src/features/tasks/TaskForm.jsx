@@ -1,11 +1,8 @@
-const initialTaskForm = {
-    project: "",
-    title: "",
-    description: "",
-    status: "Todo",
-    priority: "Medium",
-    dueDate: "",
-};
+import Card from "@/components/ui/Card";
+import Button from "@/components/ui/Button";
+
+const inputClass =
+    "rounded-xl border border-slate-300 bg-white p-3 text-slate-900 outline-none focus:ring-2 focus:ring-blue-200 dark:border-slate-700 dark:bg-slate-950 dark:text-white";
 
 export default function TaskForm({
     form,
@@ -23,8 +20,8 @@ export default function TaskForm({
     };
 
     return (
-        <div className="rounded-2xl border bg-white p-6 shadow-sm">
-            <h2 className="mb-4 text-xl font-semibold">
+        <Card>
+            <h2 className="mb-4 text-xl font-semibold text-slate-900 dark:text-white">
                 {editingTask ? "Edit Task" : "Add New Task"}
             </h2>
 
@@ -33,7 +30,7 @@ export default function TaskForm({
                     name="project"
                     value={form.project}
                     onChange={handleChange}
-                    className="rounded-xl border p-3"
+                    className={inputClass}
                     required
                 >
                     <option value="">Select Project</option>
@@ -49,7 +46,7 @@ export default function TaskForm({
                     placeholder="Task Title"
                     value={form.title}
                     onChange={handleChange}
-                    className="rounded-xl border p-3"
+                    className={inputClass}
                     required
                 />
 
@@ -57,7 +54,7 @@ export default function TaskForm({
                     name="priority"
                     value={form.priority}
                     onChange={handleChange}
-                    className="rounded-xl border p-3"
+                    className={inputClass}
                 >
                     <option value="Low">Low</option>
                     <option value="Medium">Medium</option>
@@ -69,7 +66,7 @@ export default function TaskForm({
                     name="status"
                     value={form.status}
                     onChange={handleChange}
-                    className="rounded-xl border p-3"
+                    className={inputClass}
                 >
                     <option value="Todo">Todo</option>
                     <option value="In Progress">In Progress</option>
@@ -82,7 +79,7 @@ export default function TaskForm({
                     type="date"
                     value={form.dueDate}
                     onChange={handleChange}
-                    className="rounded-xl border p-3"
+                    className={inputClass}
                 />
 
                 <textarea
@@ -90,29 +87,19 @@ export default function TaskForm({
                     placeholder="Task Description"
                     value={form.description}
                     onChange={handleChange}
-                    className="rounded-xl border p-3 md:col-span-2"
+                    className={`${inputClass} md:col-span-2`}
                 />
 
                 <div className="flex gap-3 md:col-span-2">
-                    <button
-                        type="submit"
-                        className="rounded-xl bg-blue-600 px-5 py-2.5 text-white hover:bg-blue-700"
-                    >
+                    <Button type="submit">
                         {editingTask ? "Update Task" : "Save Task"}
-                    </button>
+                    </Button>
 
-                    <button
-                        type="button"
-                        onClick={() => {
-                            setForm(initialTaskForm);
-                            onCancel();
-                        }}
-                        className="rounded-xl border px-5 py-2.5"
-                    >
+                    <Button type="button" variant="secondary" onClick={onCancel}>
                         Cancel
-                    </button>
+                    </Button>
                 </div>
             </form>
-        </div>
+        </Card>
     );
 }
