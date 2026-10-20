@@ -55,7 +55,7 @@ export default function DashboardPage() {
         <Page>
             <PageHeader
                 title="Dashboard"
-                subtitle="Welcome back, Lucky. Here's what's happening today."
+                subtitle="Welcome back! Here's what's happening today."
             />
 
             <DashboardCards dashboard={dashboard} />
