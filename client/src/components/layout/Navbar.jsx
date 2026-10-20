@@ -63,7 +63,7 @@ export default function Navbar() {
 
                     <div className="hidden sm:block">
                         <p className="text-sm font-semibold text-slate-800 dark:text-white">
-                            Lucky
+                            User
                         </p>
 
                         <p className="text-xs text-slate-500 dark:text-slate-400">
