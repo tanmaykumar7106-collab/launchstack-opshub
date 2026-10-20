@@ -51,7 +51,7 @@ export default function SettingsPage() {
                                     Name
                                 </p>
                                 <p className="font-medium text-slate-900 dark:text-white">
-                                    {user?.name || "Lucky"}
+                                    {user?.name || "User"}
                                 </p>
                             </div>
                         </div>
@@ -63,7 +63,7 @@ export default function SettingsPage() {
                                     Email
                                 </p>
                                 <p className="font-medium text-slate-900 dark:text-white">
-                                    {user?.email || "lucky@gmail.com"}
+                                    {user?.email || "user@gmail.com"}
                                 </p>
                             </div>
                         </div>
